@@ -94,3 +94,37 @@ func CountWordsAndImages(n *html.Node) (words, images int) {
 	images = mapElementCount["img"]
 	return
 }
+
+// ForEachNode call function pre(x) and post(x) for every x in the tree
+// with root n. Both functions are optional
+func ForEachNode(doc *html.Node, pre, post func(doc *html.Node)) {
+	if pre != nil {
+		pre(doc)
+	}
+
+	for c := doc.FirstChild; c != nil; c = c.NextSibling {
+		ForEachNode(c, pre, post)
+	}
+
+	if post != nil {
+		post(doc)
+	}
+}
+
+var depth int
+
+// StartElement print formated start html element
+func StartElement(doc *html.Node) {
+	if doc.Type == html.ElementNode {
+		fmt.Printf("%*s<%s>", depth*2, "", doc.Data)
+		depth++
+	}
+}
+
+// EndElement print formated end html element
+func EndElement(doc *html.Node) {
+	if doc.Type == html.ElementNode {
+		depth--
+		fmt.Printf("%*s<%s>", depth*2, "", doc.Data)
+	}
+}
