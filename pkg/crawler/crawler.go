@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"unicode"
 
 	"golang.org/x/net/html"
 )
@@ -114,17 +115,43 @@ func ForEachNode(doc *html.Node, pre, post func(doc *html.Node)) {
 var depth int
 
 // StartElement print formated start html element
-func StartElement(doc *html.Node) {
-	if doc.Type == html.ElementNode {
-		fmt.Printf("%*s<%s>\n", depth*2, "", doc.Data)
-		depth++
+func StartElement(n *html.Node) {
+	if n.Type != html.ElementNode {
+		return
 	}
+	data := n.Data
+	if isWhiteSpace(data) {
+		data = ""
+	}
+	fmt.Printf("%*s<%s", depth*2, "", data)
+	for _, a := range n.Attr {
+		fmt.Printf(" %s='%v' ", a.Key, a.Val)
+	}
+	if n.FirstChild != nil {
+		fmt.Printf(">\n")
+	} else {
+		fmt.Printf("/>\n")
+	}
+	depth++
 }
 
 // EndElement print formated end html element
-func EndElement(doc *html.Node) {
-	if doc.Type == html.ElementNode {
-		depth--
-		fmt.Printf("%*s</%s>\n", depth*2, "", doc.Data)
+func EndElement(n *html.Node) {
+	if n.Type != html.ElementNode {
+		return
 	}
+
+	depth--
+	if n.FirstChild != nil {
+		fmt.Printf("%*s</%s>\n", depth*2, "", n.Data)
+	}
+}
+
+func isWhiteSpace(s string) bool {
+	for _, r := range s {
+		if !unicode.IsSpace(r) {
+			return false
+		}
+	}
+	return true
 }
