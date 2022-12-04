@@ -1,4 +1,4 @@
-// package provide a funktion to extract links from html doc.
+// Package links provide a funktion to extract links from html doc.
 package links
 
 import (
