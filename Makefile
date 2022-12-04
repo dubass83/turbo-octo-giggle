@@ -15,4 +15,4 @@ lint:
 
 build:
 	go build -o bin/crawler ./cmd/crawler
-    go build -o bin/links ./cmd/links
+	go build -o bin/links ./cmd/links
