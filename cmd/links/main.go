@@ -25,6 +25,14 @@ func main() {
 	_, err := url.ParseRequestURI(siteURL)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "bad URL: %s was provided.\n error: %v", siteURL, err)
+		os.Exit(1)
 	}
-	links.Extract(siteURL)
+	ln, err := links.Extract(siteURL)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v", err)
+		os.Exit(2)
+	}
+	for _, v := range ln {
+		fmt.Println(v)
+	}
 }
