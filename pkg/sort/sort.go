@@ -1,6 +1,7 @@
 package sort
 
 import (
+	"fmt"
 	"math/rand"
 	"sort"
 )
@@ -29,12 +30,27 @@ func QuikSort(a []int) []int {
 }
 
 // TopoSort create a list with valid topological orderings
-func TopoSort(m map[string][]string) []string {
+func TopoSort(m map[string][]string) ([]string, error) {
 	var order []string
 	seen := make(map[string]bool)
 	var check func(item string)
 
+	var findCycle = func(item, val string) bool {
+		if _, ex := m[val]; !ex {
+			return false
+		}
+		var vs []string
+		vs = append(vs, m[val]...)
+		for _, v := range vs {
+			if v == item {
+				return true
+			}
+		}
+		return false
+	}
+
 	check = func(item string) {
+
 		if !seen[item] {
 			seen[item] = true
 			if _, ex := m[item]; ex {
@@ -54,9 +70,20 @@ func TopoSort(m map[string][]string) []string {
 	sort.Strings(keys)
 
 	for _, key := range keys {
+		var values []string
+		if _, ex := m[key]; ex {
+			values = append(values, m[key]...)
+
+			for _, val := range values {
+				if findCycle(key, val) {
+					return nil, fmt.Errorf("find cycle between %s and %s", key, val)
+				}
+			}
+		}
+
 		check(key)
 	}
-	return order
+	return order, nil
 }
 
 func topoSort(m map[string][]string) []string {
