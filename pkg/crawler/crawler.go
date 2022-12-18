@@ -174,11 +174,15 @@ func Fetch(url string) (filename string, n int64, err error) {
 	if err != nil {
 		return "", 0, err
 	}
-	closeFile := func(f *os.File) func() {
+	// closeFile := func(f *os.File) func() {
+	// 	closeErr := f.Close()
+	// 	return func() { err = closeErr }
+	// }
+	// defer closeFile(f)()
+	defer func() {
 		closeErr := f.Close()
-		return func() { err = closeErr }
-	}
-	defer closeFile(f)()
+		err = closeErr
+	}()
 	n, err = io.Copy(f, resp.Body)
 	return local, n, err
 }

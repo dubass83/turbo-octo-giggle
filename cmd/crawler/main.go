@@ -16,26 +16,27 @@ var (
 	countByEllement     bool
 	countWordsAndImages bool
 	forEachNode         bool
+	fetch               bool
 )
 
 func init() {
 	flag.BoolVar(&textFromHTML, "textFromHTML", false, "get text from html")
 	flag.BoolVar(&countByEllement, "countByEllement", false, "count by element")
 	flag.BoolVar(&countWordsAndImages, "countWordsAndImages", false, "count words and images")
-	flag.BoolVar(&forEachNode, "forEachNode", true, "print each node")
+	flag.BoolVar(&forEachNode, "forEachNode", false, "print each node")
+	flag.BoolVar(&fetch, "fetch", true, "save HTTP response to the file")
 }
 
 func main() {
 	// Call flag.Parse() to parse command-line flags
 	flag.Parse()
 
-	doc, err := html.Parse(os.Stdin)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "findlinks1: %v\n", err)
-		os.Exit(1)
-	}
-
 	if textFromHTML {
+		doc, err := html.Parse(os.Stdin)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "findlinks1: %v\n", err)
+			os.Exit(1)
+		}
 		for _, rawLine := range crawler.TextFromHTML(nil, doc) {
 			line := strings.TrimSpace(rawLine)
 			if line == "" {
@@ -46,6 +47,11 @@ func main() {
 	}
 
 	if countByEllement {
+		doc, err := html.Parse(os.Stdin)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "findlinks1: %v\n", err)
+			os.Exit(1)
+		}
 		mapElementCount := crawler.CountElements(map[string]int{}, doc)
 		sliceKeysMap := make([]string, 0, len(mapElementCount))
 		for key := range mapElementCount {
@@ -72,6 +78,21 @@ func main() {
 	}
 
 	if forEachNode {
+		doc, err := html.Parse(os.Stdin)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "findlinks1: %v\n", err)
+			os.Exit(1)
+		}
 		crawler.ForEachNode(doc, crawler.StartElement, crawler.EndElement)
+	}
+
+	if fetch {
+		url := "https://dubass83.xyz/"
+		filename, n, err := crawler.Fetch(url)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v", err)
+			os.Exit(1)
+		}
+		fmt.Fprintf(os.Stdout, "save URL: %s to file %s\nbyte: %d", url, filename, n)
 	}
 }
