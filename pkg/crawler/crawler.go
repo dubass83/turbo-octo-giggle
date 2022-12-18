@@ -2,7 +2,10 @@ package crawler
 
 import (
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path"
 	"strings"
 	"unicode"
 
@@ -154,4 +157,28 @@ func isWhiteSpace(s string) bool {
 		}
 	}
 	return true
+}
+
+// Fetch save HTTP response to the file
+func Fetch(url string) (filename string, n int64, err error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", 0, err
+	}
+	defer resp.Body.Close()
+	local := path.Base(resp.Request.URL.Path)
+	if local == "/" {
+		local = "index.html"
+	}
+	f, err := os.Create(local)
+	if err != nil {
+		return "", 0, err
+	}
+	closeFile := func(f *os.File) func() {
+		closeErr := f.Close()
+		return func() { err = closeErr }
+	}
+	defer closeFile(f)()
+	n, err = io.Copy(f, resp.Body)
+	return local, n, err
 }
