@@ -32,19 +32,19 @@ func BinaryInt(sl []int, val int) (find int, err error) {
 }
 
 func BFS(start string, graph map[string][]string, check func(name string) bool) bool {
-	var search_queue []string
-	search_queue = append(search_queue, graph[start]...)
+	var searchQueue []string
+	searchQueue = append(searchQueue, graph[start]...)
 	var searched []string
 	var person string
-	for len(search_queue) != 0 {
-		person = search_queue[0]
-		search_queue = search_queue[1:]
+	for len(searchQueue) != 0 {
+		person = searchQueue[0]
+		searchQueue = searchQueue[1:]
 		if personNotInSearched(person, searched) {
 			if check(person) {
 				fmt.Println("find: ", person)
 				return true
 			}
-			search_queue = append(search_queue, graph[person]...)
+			searchQueue = append(searchQueue, graph[person]...)
 			searched = append(searched, person)
 		}
 	}
