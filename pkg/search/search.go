@@ -64,7 +64,9 @@ func personNotInSearched(name string, serched []string) bool {
 func DijkstraAlgo(start string, graph map[string]map[string]uint64) map[int]map[string]uint64 {
 
 	costs := initCosts(start, graph)
+	parents := initParents(start, graph)
 
+	node := findLowestCostNode(costs)
 }
 
 func initCosts(start string, graph map[string]map[string]uint64) map[string]uint64 {
@@ -78,6 +80,17 @@ func initCosts(start string, graph map[string]map[string]uint64) map[string]uint
 		costs[key] = math.MaxUint64
 	}
 	return costs
+}
+
+func initParents(start string, graph map[string]map[string]uint64) map[string]string {
+	parents := make(map[string]string)
+	for key := range graph {
+		if key == start {
+			continue
+		}
+		parents[key] = ""
+	}
+	return parents
 }
 
 func contains(name string, s []string) bool {
