@@ -3,6 +3,7 @@ package search
 import (
 	"fmt"
 	"sort"
+	"math"
 )
 
 func BinaryInt(sl []int, val int) (find int, err error) {
@@ -58,4 +59,30 @@ func personNotInSearched(name string, serched []string) bool {
 		}
 	}
 	return true
+}
+
+func DijkstraAlgo(start string, graph map[string]map[string]int64) map[int]map[string]int64 {
+
+}
+
+initCosts(start string, graph map[string]map[string]int64) map[string]int64{
+  costs = make(map[string]int64)
+
+  costs[start] = 0
+  for key := range graph{
+	if key == start {
+		continue
+	}
+	costs[key] = math.Inf(1)
+  }
+  return costs
+}
+
+func contains(name string, s []string) bool {
+	for _, n := range s {
+		if n == name {
+			return true
+		}
+		return false
+	}
 }
