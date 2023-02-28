@@ -61,7 +61,7 @@ func personNotInSearched(name string, serched []string) bool {
 	return true
 }
 
-func DijkstraAlgo(start string, graph map[string]map[string]uint64) map[int]map[string]uint64 {
+func DijkstraAlgo(start string, graph map[string]map[string]uint64) []map[string]uint64 {
 
 	processed := make([]string, 0)
 
@@ -69,6 +69,33 @@ func DijkstraAlgo(start string, graph map[string]map[string]uint64) map[int]map[
 	parents := initParents(start, graph)
 
 	node := findLowestCostNode(costs, processed)
+
+	for node != "" {
+		cost := costs[node]
+		neighbors := graph[node]
+		for n, _ := range neighbors {
+			newCost := cost + neighbors[n]
+			if costs[n] > newCost {
+				costs[n] = newCost
+				parents[n] = node
+			}
+		}
+		processed = append(processed, node)
+		node = findLowestCostNode(costs, processed)
+	}
+	res := make([]map[string]uint64, len(parents))
+	revParents := revertMap(parents)
+	res = append(res, graph[start])
+	lastAdded := start
+	for lastAdded != "" {
+		res = append(res, graph[revParents[lastAdded]])
+		if value, isMapContainsKey := revParents[lastAdded]; isMapContainsKey {
+			lastAdded = value
+		} else {
+			lastAdded = ""
+		}
+	}
+	return res
 }
 
 func initCosts(start string, graph map[string]map[string]uint64) map[string]uint64 {
@@ -117,4 +144,12 @@ func contains(name string, s []string) bool {
 		}
 	}
 	return false
+}
+
+func revertMap(m map[string]string) map[string]string {
+	res := make(map[string]string)
+	for key, val := range m {
+		res[val] = key
+	}
+	return res
 }
