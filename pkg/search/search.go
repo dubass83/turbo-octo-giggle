@@ -2,8 +2,8 @@ package search
 
 import (
 	"fmt"
-	"sort"
 	"math"
+	"sort"
 )
 
 func BinaryInt(sl []int, val int) (find int, err error) {
@@ -61,21 +61,23 @@ func personNotInSearched(name string, serched []string) bool {
 	return true
 }
 
-func DijkstraAlgo(start string, graph map[string]map[string]int64) map[int]map[string]int64 {
+func DijkstraAlgo(start string, graph map[string]map[string]uint64) map[int]map[string]uint64 {
+
+	costs := initCosts(start, graph)
 
 }
 
-initCosts(start string, graph map[string]map[string]int64) map[string]int64{
-  costs = make(map[string]int64)
+func initCosts(start string, graph map[string]map[string]uint64) map[string]uint64 {
+	costs := make(map[string]uint64)
 
-  costs[start] = 0
-  for key := range graph{
-	if key == start {
-		continue
+	costs[start] = 0
+	for key := range graph {
+		if key == start {
+			continue
+		}
+		costs[key] = math.MaxUint64
 	}
-	costs[key] = math.Inf(1)
-  }
-  return costs
+	return costs
 }
 
 func contains(name string, s []string) bool {
