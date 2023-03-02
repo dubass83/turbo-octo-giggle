@@ -83,12 +83,17 @@ func DijkstraAlgo(start string, graph map[string]map[string]uint64) []map[string
 		processed = append(processed, node)
 		node = findLowestCostNode(costs, processed)
 	}
-	res := make([]map[string]uint64, len(parents))
+	var res []map[string]uint64
 	revParents := revertMap(parents)
-	res = append(res, graph[start])
+	res = append(res, map[string]uint64{"start": costs[start]})
 	lastAdded := start
 	for lastAdded != "" {
-		res = append(res, graph[revParents[lastAdded]])
+		if revParents[lastAdded] == "" {
+			fmt.Println("find key with empty string")
+			lastAdded = ""
+			continue
+		}
+		res = append(res, map[string]uint64{revParents[lastAdded]: costs[revParents[lastAdded]]})
 		if value, isMapContainsKey := revParents[lastAdded]; isMapContainsKey {
 			lastAdded = value
 		} else {
